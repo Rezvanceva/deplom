@@ -65,7 +65,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            cd todolist
+            cd deplom
             docker-compose up -d
       - name: Clear after deploy
         if: always()
