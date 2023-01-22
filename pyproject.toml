@@ -12,7 +12,11 @@ envparse = "^0.2.0"
 path = "^16.6.0"
 psycopg2-binary = "^2.9.5"
 gunicorn = "^20.1.0"
+ansible-vault-win = "^1.0.0"
 
+
+[tool.poetry.group.dev.dependencies]
+ansible-vault-win = "^1.0.0"
 
 [build-system]
 requires = ["poetry-core"]
