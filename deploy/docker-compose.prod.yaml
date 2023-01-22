@@ -18,7 +18,8 @@ services:
       retries: 5
 
   api:
-    image: ${DOCKERHUB_USERNAME}/todolist:${TAG_NAME}
+    image: ${secrets.DOCKERHUB_USERNAME}/deplom:${TAG_NAME}
+    build: .
     restart: always
     env_file:
       - .env
@@ -27,8 +28,7 @@ services:
         condition: service_healthy
 
   collect_static:
-    image: ${DOCKERHUB_USERNAME}/todolist:${TAG_NAME}
-    build: .
+    image: ${secrets.DOCKERHUB_USERNAME}/deplom:${TAG_NAME}
     env_file:
       - .env
     depends_on:
