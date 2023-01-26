@@ -34,7 +34,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./todolist/:/opt/todolist
+      - ./deplom/:/opt/todolist
 
   collect_static:
     build: .
