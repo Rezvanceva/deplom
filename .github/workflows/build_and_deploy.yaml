@@ -15,12 +15,12 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{DOCKERHUB_USERNAME }}/deplom
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/deplom
       - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
-          username: ${{DOCKERHUB_USERNAME }}
-          password: ${{ DOCKERHUB_TOKEN }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
@@ -39,7 +39,7 @@ jobs:
         run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
       - name: Update docker compose
         env:
-          DOCKERHUB_USERNAME: ${{ DOCKERHUB_USERNAME }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           TAG_NAME: ${{ steps.vars.outputs.tag }}
         run: |
           envsubst '$DOCKERHUB_USERNAME, $TAG_NAME' < deploy/docker-compose.prod.yaml > deploy/docker-compose.yaml
@@ -47,23 +47,23 @@ jobs:
       - name: Decrypt .env
         uses: anthonykgross/ansible-vault-cli-github-action@v1
         with:
-          vault_key: ${{ ANSIBLE_VAULT_PASSWORD }}
+          vault_key: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
           command: "ansible-vault decrypt deploy/.env"
       - name: Copy on server
         uses: appleboy/scp-action@master
         with:
-          host: ${{ SSH_HOST }}
-          username: ${{ SSH_USER }}
-          password: ${{ SSH_PASSWORD }}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
           source: "deploy/*"
           target: "deplom"
           strip_components: 1
       - name: Run compose
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ SSH_HOST }}
-          username: ${{ SSH_USER }}
-          password: ${{ SSH_PASSWORD }}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
           script: |
             cd deplom
             docker-compose pull
