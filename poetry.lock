@@ -108,6 +108,18 @@ files = [
 pycparser = "*"
 
 [[package]]
+name = "cfgv"
+version = "3.3.1"
+description = "Validate configuration and produce human readable error messages."
+category = "main"
+optional = false
+python-versions = ">=3.6.1"
+files = [
+    {file = "cfgv-3.3.1-py2.py3-none-any.whl", hash = "sha256:c6a0883f3917a037485059700b9e75da2464e6c27051014ad85ba6aaa5884426"},
+    {file = "cfgv-3.3.1.tar.gz", hash = "sha256:f5a830efb9ce7a445376bb66ec94c638a9787422f96264c98edc6bdeed8ab736"},
+]
+
+[[package]]
 name = "cryptography"
 version = "39.0.0"
 description = "cryptography is a package which provides cryptographic recipes and primitives to Python developers."
@@ -173,6 +185,22 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "djangorestframework"
+version = "3.14.0"
+description = "Web APIs for Django, made easy."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "djangorestframework-3.14.0-py3-none-any.whl", hash = "sha256:eb63f58c9f218e1a7d064d17a70751f528ed4e1d35547fdade9aaf4cd103fd08"},
+    {file = "djangorestframework-3.14.0.tar.gz", hash = "sha256:579a333e6256b09489cbe0a067e66abe55c6595d8926be6b99423786334350c8"},
+]
+
+[package.dependencies]
+django = ">=3.0"
+pytz = "*"
+
+[[package]]
 name = "envparse"
 version = "0.2.0"
 description = "Simple environment variable parsing"
@@ -185,6 +213,29 @@ files = [
 
 [package.extras]
 testing = ["pytest"]
+
+[[package]]
+name = "future"
+version = "0.18.3"
+description = "Clean single-source support for Python 3 and 2"
+category = "main"
+optional = false
+python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+files = [
+    {file = "future-0.18.3.tar.gz", hash = "sha256:34a17436ed1e96697a86f9de3d15a3b0be01d8bc8de9c1dffd59fb8234ed5307"},
+]
+
+[[package]]
+name = "generics"
+version = "6.0.0"
+description = "A classy toolkit designed with OOP in mind."
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "generics-6.0.0-py2.py3-none-any.whl", hash = "sha256:ed71d45b3422edb601cdcbad6bd5cd81d5909f908725c7530b38d3b8a188bf1e"},
+    {file = "generics-6.0.0.tar.gz", hash = "sha256:4a0390dae5000d17f11624ac6fc465b472201816532b07ae958500b7c2388904"},
+]
 
 [[package]]
 name = "gunicorn"
@@ -317,6 +368,32 @@ files = [
 ]
 
 [[package]]
+name = "pytz"
+version = "2022.7.1"
+description = "World timezone definitions, modern and historical"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pytz-2022.7.1-py2.py3-none-any.whl", hash = "sha256:78f4f37d8198e0627c5f1143240bb0206b8691d8d7ac6d78fee88b78733f8c4a"},
+    {file = "pytz-2022.7.1.tar.gz", hash = "sha256:01a0681c4b9684a28304615eba55d1ab31ae00bf68ec157ec3708a8182dbbcd0"},
+]
+
+[[package]]
+name = "serializers"
+version = "0.2.4"
+description = "A minimal port of rails' ActiveModel Serializer"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "serializers-0.2.4-py2.py3-none-any.whl", hash = "sha256:fe58212826290e6c1a52c289bcc431f74a196e1fb8a797ce43034c7d0aa0287f"},
+]
+
+[package.dependencies]
+future = "*"
+
+[[package]]
 name = "setuptools"
 version = "66.1.1"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
@@ -360,4 +437,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "28e6a517772d348408160b9c96491e98aa5f1f4576f851c53780e16fcf743925"
+content-hash = "a14592f8d7d0a000f93bace19e877ebd0edf94eb58d066983439c81708d45564"
