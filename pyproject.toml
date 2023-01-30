@@ -17,6 +17,9 @@ serializers = "^0.2.4"
 djangorestframework = "^3.14.0"
 cfgv = "^3.3.1"
 generics = "^6.0.0"
+response = "^0.5.0"
+django-health-check = "^3.17.0"
+views = "^0.3"
 
 
 [tool.poetry.group.dev.dependencies]
