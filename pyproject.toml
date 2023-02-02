@@ -20,6 +20,7 @@ generics = "^6.0.0"
 response = "^0.5.0"
 django-health-check = "^3.17.0"
 views = "^0.3"
+social-auth-app-django = "^5.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
