@@ -21,10 +21,12 @@ response = "^0.5.0"
 django-health-check = "^3.17.0"
 views = "^0.3"
 social-auth-app-django = "^5.0.0"
+django-filter = "^22.1"
 
 
 [tool.poetry.group.dev.dependencies]
 ansible-vault-win = "^1.0.0"
+django-extensions = "^3.2.1"
 
 [build-system]
 requires = ["poetry-core"]

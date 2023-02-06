@@ -27,10 +27,14 @@ INSTALLED_APPS = [
     # third-party apps
     'rest_framework',
     'social_django',
+    'django_filters',
     # project apps
     'todolist.core',
     'todolist.goals',
 ]
+
+if DEBUG:
+    INSTALLED_APPS += ['django_extensions', ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -122,3 +126,9 @@ SOCIAL_AUTH_VK_EXTRA_DATA = [
 ]
 SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/logged-in/'
 SOCIAL_AUTH_USER_MODEL = 'core.User'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'DATETIME_FORMAT': '%Y-%m-%d %H:%M:%S',
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+}
