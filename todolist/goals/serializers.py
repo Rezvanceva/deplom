@@ -16,6 +16,18 @@ class GoalCategoryCreateSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('id', 'created', 'updated', 'user', 'is_deleted')
 
+    def validate_board(self, value: Board) -> Board:
+        if value.is_deleted:
+            raise serializers.ValidationError('Board is deleted')
+
+        if not BoardParticipant.objects.filter(
+                board=value,
+                role__in=[BoardParticipant.Role.owner, BoardParticipant.Role.writer],
+                user_id=self.context['request'].user.id
+        ):
+            raise PermissionDenied
+        return value
+
 
 class GoalCategorySerializer(serializers.ModelSerializer):
     user = ProfileSerializer(read_only=True)
@@ -23,7 +35,7 @@ class GoalCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = GoalCategory
         fields = '__all__'
-        read_only_fields = ('id', 'created', 'updated', 'user')
+        read_only_fields = ('id', 'created', 'updated', 'user', 'board')
         extra_kwargs = {
             'is_deleted': {'write_only': True}
         }
@@ -40,9 +52,13 @@ class GoalCreateSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('id', 'created', 'updated', 'user')
 
-    def validate_category(self, value: Type[GoalCategory]):
-        if self.context['request'].user != value.user:
-            raise exceptions.PermissionDenied
+    def validate_category(self, value: GoalCategory):
+        if not BoardParticipant.objects.filter(
+                board_id=value.board_id,
+                role__in=[BoardParticipant.Role.owner, BoardParticipant.Role.writer],
+                user_id=self.context['request'].user.id
+        ):
+            raise PermissionDenied
         return value
 
 
@@ -66,6 +82,15 @@ class GoalCommentCreateSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('id', 'created', 'updated', 'user')
 
+    def validate_goal(self, value: Goal):
+        if not BoardParticipant.objects.filter(
+                board=value.category.board_id,
+                role__in=[BoardParticipant.Role.owner, BoardParticipant.Role.writer],
+                user_id=self.context['request'].user.id
+        ):
+            raise PermissionDenied
+        return value
+
 
 class GoalCommentSerializer(serializers.ModelSerializer):
     user = ProfileSerializer(read_only=True)
@@ -74,6 +99,7 @@ class GoalCommentSerializer(serializers.ModelSerializer):
         model = GoalComment
         fields = '__all__'
         read_only_fields = ('id', 'created', 'updated', 'user', 'goal')
+
 
 class BoardCreateSerializer(serializers.ModelSerializer):
     class Meta:
