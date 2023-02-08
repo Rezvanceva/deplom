@@ -4,15 +4,14 @@ from todolist.core.models import User
 
 
 class BaseModel(models.Model):
-    """Базовая модель от которой наследуются остальные модели"""
-    created = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
-    updated = models.DateTimeField(verbose_name="Дата последнего обновления", auto_now=True)
+    created = models.DateTimeField(verbose_name='Дата создания', auto_now_add=True)
+    updated = models.DateTimeField(verbose_name='Дата последнего обновления', auto_now=True)
 
     class Meta:
         abstract = True
 
+
 class Board(BaseModel):
-    """Класс модели доски целей"""
     class Meta:
         verbose_name = 'Доска'
         verbose_name_plural = 'Доски'
@@ -22,7 +21,6 @@ class Board(BaseModel):
 
 
 class BoardParticipant(BaseModel):
-    """Класс модели добавленных участников доски целей"""
     class Role(models.IntegerChoices):
         owner = 1, 'Владелец'
         writer = 2, 'Редактор'
@@ -50,25 +48,23 @@ class BoardParticipant(BaseModel):
         verbose_name_plural = 'Участники'
 
 
-
 class GoalCategory(BaseModel):
-    """Класс модели категорий целей"""
-    title = models.CharField(verbose_name="Название", max_length=255)
-    user = models.ForeignKey(User, verbose_name="Автор", on_delete=models.PROTECT)
-    is_deleted = models.BooleanField(verbose_name="Удалена", default=False)
+    title = models.CharField(verbose_name='Название', max_length=255)
+    user = models.ForeignKey(User, verbose_name='Автор', on_delete=models.PROTECT)
+    is_deleted = models.BooleanField(verbose_name='Удалена', default=False)
     board = models.ForeignKey(
-        Board, verbose_name='Доска', on_delete=models.PROTECT, related_name='categories'
+        Board, verbose_name='Доска', on_delete=models.PROTECT, related_name='categories',
     )
+
     class Meta:
-        verbose_name = "Категория"
-        verbose_name_plural = "Категории"
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
 
     def __str__(self):
         return self.title
 
 
 class Goal(BaseModel):
-    """Класс модели целей"""
     class Status(models.IntegerChoices):
         to_do = 1, 'К выполнению'
         in_progress = 2, 'В процессе'
@@ -99,7 +95,7 @@ class Goal(BaseModel):
         choices=Priority.choices,
         default=Priority.medium,
     )
-    due_date = models.DateTimeField(verbose_name='Дата выполнения', null=True, blank=True)
+    due_date = models.DateTimeField(verbose_name='Дедлайн', null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='Автор', related_name='goals')
 
     class Meta:
@@ -111,7 +107,6 @@ class Goal(BaseModel):
 
 
 class GoalComment(BaseModel):
-    """Класс модели комментариев цели"""
     user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='Автор', related_name='comments')
     goal = models.ForeignKey(Goal, verbose_name='Цель', on_delete=models.CASCADE, related_name='comments')
     text = models.TextField(verbose_name='Текст')
