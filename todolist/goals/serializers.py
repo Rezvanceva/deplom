@@ -53,7 +53,7 @@ class GoalCreateSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('id', 'created', 'updated', 'user')
 
-    def validate_category(self, value: Type[GoalCategory]):
+    def validate_category(self, value: GoalCategory):
         if not BoardParticipant.objects.filter(
                 board_id=value.board_id,
                 role__in=[BoardParticipant.Role.owner, BoardParticipant.Role.writer],
@@ -100,6 +100,7 @@ class GoalCommentSerializer(serializers.ModelSerializer):
         model = GoalComment
         fields = '__all__'
         read_only_fields = ('id', 'created', 'updated', 'user', 'goal')
+
 
 class BoardCreateSerializer(serializers.ModelSerializer):
     class Meta:
