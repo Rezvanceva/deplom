@@ -12,9 +12,7 @@ from todolist.goals.serializers import (
     GoalCreateSerializer, GoalSerializer, BoardCreateSerializer, BoardListSerializer, BoardSerializer,
 )
 
-
 class BoardCreateView(generics.CreateAPIView):
-    """Ручка для создания доски"""
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = BoardCreateSerializer
 
@@ -24,7 +22,6 @@ class BoardCreateView(generics.CreateAPIView):
 
 
 class BoardListView(generics.ListAPIView):
-    """Ручка для отображения списка досок"""
     model = Board
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = BoardListSerializer
@@ -40,7 +37,6 @@ class BoardListView(generics.ListAPIView):
 
 
 class BoardView(generics.RetrieveUpdateDestroyAPIView):
-    """Ручка для отображения, редактирования и удаления доски"""
     model = Board
     permission_classes = [BoardPermissions]
     serializer_class = BoardSerializer
@@ -56,15 +52,12 @@ class BoardView(generics.RetrieveUpdateDestroyAPIView):
             Goal.objects.filter(category__board=instance).update(status=Goal.Status.archived)
         return instance
 
-
 class GoalCategoryCreateView(generics.CreateAPIView):
-    """Ручка для создания категории"""
     permission_classes = [GoalCategoryPermissions]
     serializer_class = GoalCategoryCreateSerializer
 
 
 class GoalCategoryListView(generics.ListAPIView):
-    """Ручка для отображения списка категорий"""
     model = GoalCategory
     permission_classes = [GoalCategoryPermissions]
     serializer_class = GoalCategorySerializer
@@ -82,7 +75,6 @@ class GoalCategoryListView(generics.ListAPIView):
 
 
 class GoalCategoryView(generics.RetrieveUpdateDestroyAPIView):
-    """Ручка для отображения, редактирования и удаления категории"""
     model = GoalCategory
     serializer_class = GoalCategorySerializer
     permission_classes = [GoalCategoryPermissions, IsOwnerOrReadOnly]
@@ -102,13 +94,11 @@ class GoalCategoryView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class GoalCreateView(generics.CreateAPIView):
-    """Ручка для создания цели"""
     serializer_class = GoalCreateSerializer
     permission_classes = [GoalPermissions]
 
 
 class GoalListView(generics.ListAPIView):
-    """Ручка для отображения списка целей"""
     model = Goal
     permission_classes = [GoalPermissions]
     serializer_class = GoalSerializer
@@ -126,30 +116,20 @@ class GoalListView(generics.ListAPIView):
 
 
 class GoalView(generics.RetrieveUpdateAPIView):
-    """Ручка для отображения, редактирования и удаления цели"""
     model = Goal
     permission_classes = [GoalPermissions, IsOwnerOrReadOnly]
     serializer_class = GoalSerializer
 
     def get_queryset(self):
-        return Goal.objects.select_related('user', 'category__board').filter(
-            Q(category__board__participants__user_id=self.request.user.id) & ~Q(status=Goal.Status.archived)
-        )
-
-    def perform_destroy(self, instance: Goal):
-        instance.status = Goal.Status.archived
-        instance.save(update_fields=('status',))
-        return
+        return Goal.objects.filter(~Q(status=Goal.Status.archived) & Q(category__is_deleted=False))
 
 
 class GoalCommentCreateView(generics.CreateAPIView):
-    """Ручка для создания комментария"""
     serializer_class = GoalCommentCreateSerializer
     permission_classes = [CommentsPermissions]
 
 
 class GoalCommentListView(generics.ListAPIView):
-    """Ручка для отображения списка комментариев"""
     model = GoalComment
     permission_classes = [CommentsPermissions]
     serializer_class = GoalCommentSerializer
@@ -158,11 +138,12 @@ class GoalCommentListView(generics.ListAPIView):
     ordering = ['-created']
 
     def get_queryset(self):
-        return GoalComment.objects.filter(goal__category__board__participants__user_id=self.request.user.id)
+        return GoalComment.objects.filter(
+            goal__category__board__participants__user_id=self.request.user.id,
+        )
 
 
 class GoalCommentView(generics.RetrieveUpdateDestroyAPIView):
-    """Ручка для отображения, редактирования и удаления комментария"""
     model = GoalComment
     permission_classes = [CommentsPermissions, IsOwnerOrReadOnly]
     serializer_class = GoalCommentSerializer
