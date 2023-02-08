@@ -6,6 +6,7 @@ from todolist.goals.models import Goal
 
 
 class GoalDateFilter(rest_framework.FilterSet):
+    """Фильтерсет для корректного отображения фильтров в rest_framework панели"""
     class Meta:
         model = Goal
         fields = {

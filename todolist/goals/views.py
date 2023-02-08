@@ -4,42 +4,94 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, permissions
 
 from todolist.goals.filters import GoalDateFilter
-from todolist.goals.models import Goal, GoalCategory, GoalComment
-from todolist.goals.permissions import IsOwnerOrReadOnly
+from todolist.goals.models import Goal, GoalCategory, GoalComment, BoardParticipant, Board
+from todolist.goals.permissions import IsOwnerOrReadOnly, BoardPermissions, GoalCategoryPermissions, GoalPermissions, \
+    CommentsPermissions
 from todolist.goals.serializers import (
     GoalCategoryCreateSerializer, GoalCategorySerializer, GoalCommentCreateSerializer, GoalCommentSerializer,
-    GoalCreateSerializer, GoalSerializer,
+    GoalCreateSerializer, GoalSerializer, BoardCreateSerializer, BoardListSerializer, BoardSerializer,
 )
 
 
-class GoalCategoryCreateView(generics.CreateAPIView):
+class BoardCreateView(generics.CreateAPIView):
+    """Ручка для создания доски"""
     permission_classes = [permissions.IsAuthenticated]
+    serializer_class = BoardCreateSerializer
+
+    def perform_create(self, serializer):
+        """ Делаем текущего пользователя владельцем доски. """
+        BoardParticipant.objects.create(user=self.request.user, board=serializer.save())
+
+
+class BoardListView(generics.ListAPIView):
+    """Ручка для отображения списка досок"""
+    model = Board
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = BoardListSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['title', 'created']
+    ordering = ['title']
+
+    def get_queryset(self):
+        return Board.objects.prefetch_related('participants').filter(
+            participants__user_id=self.request.user.id,
+            is_deleted=False
+        )
+
+
+class BoardView(generics.RetrieveUpdateDestroyAPIView):
+    """Ручка для отображения, редактирования и удаления доски"""
+    model = Board
+    permission_classes = [BoardPermissions]
+    serializer_class = BoardSerializer
+
+    def get_queryset(self):
+        return Board.objects.filter(is_deleted=False)
+
+    def perform_destroy(self, instance: Board):
+        with transaction.atomic():
+            instance.is_deleted = True
+            instance.save(update_fields=('is_deleted',))
+            instance.categories.update(is_deleted=True)
+            Goal.objects.filter(category__board=instance).update(status=Goal.Status.archived)
+        return instance
+
+
+class GoalCategoryCreateView(generics.CreateAPIView):
+    """Ручка для создания категории"""
+    permission_classes = [GoalCategoryPermissions]
     serializer_class = GoalCategoryCreateSerializer
 
 
 class GoalCategoryListView(generics.ListAPIView):
+    """Ручка для отображения списка категорий"""
     model = GoalCategory
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [GoalCategoryPermissions]
     serializer_class = GoalCategorySerializer
     filter_backends = [filters.OrderingFilter, filters.SearchFilter]
+    filterset_fields = ['board']
     ordering_fields = ['title', 'created']
     ordering = ['title']
     search_fields = ['title']
 
     def get_queryset(self):
-        return GoalCategory.objects.select_related('user').filter(
-            user_id=self.request.user.id,
+        return GoalCategory.objects.prefetch_related('board__participants').filter(
+            board__participants__user_id=self.request.user.id,
             is_deleted=False
         )
 
 
 class GoalCategoryView(generics.RetrieveUpdateDestroyAPIView):
+    """Ручка для отображения, редактирования и удаления категории"""
     model = GoalCategory
     serializer_class = GoalCategorySerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [GoalCategoryPermissions, IsOwnerOrReadOnly]
 
     def get_queryset(self):
-        return GoalCategory.objects.filter(is_deleted=False)
+        return GoalCategory.objects.prefetch_related('board__participants').filter(
+            board__participants__user_id=self.request.user.id,
+            is_deleted=False
+        )
 
     def perform_destroy(self, instance: GoalCategory):
         with transaction.atomic():
@@ -50,13 +102,15 @@ class GoalCategoryView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class GoalCreateView(generics.CreateAPIView):
+    """Ручка для создания цели"""
     serializer_class = GoalCreateSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [GoalPermissions]
 
 
 class GoalListView(generics.ListAPIView):
+    """Ручка для отображения списка целей"""
     model = Goal
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [GoalPermissions]
     serializer_class = GoalSerializer
     filterset_class = GoalDateFilter
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
@@ -71,8 +125,9 @@ class GoalListView(generics.ListAPIView):
 
 
 class GoalView(generics.RetrieveUpdateAPIView):
+    """Ручка для отображения, редактирования и удаления цели"""
     model = Goal
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [GoalPermissions, IsOwnerOrReadOnly]
     serializer_class = GoalSerializer
 
     def get_queryset(self):
@@ -80,25 +135,28 @@ class GoalView(generics.RetrieveUpdateAPIView):
 
 
 class GoalCommentCreateView(generics.CreateAPIView):
+    """Ручка для создания комментария"""
     serializer_class = GoalCommentCreateSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CommentsPermissions]
 
 
 class GoalCommentListView(generics.ListAPIView):
+    """Ручка для отображения списка комментариев"""
     model = GoalComment
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [CommentsPermissions]
     serializer_class = GoalCommentSerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ['goal']
     ordering = ['-created']
 
     def get_queryset(self):
-        return GoalComment.objects.filter(user_id=self.request.user.id)
+        return GoalComment.objects.filter(goal__category__board__participants__user_id=self.request.user.id)
 
 
 class GoalCommentView(generics.RetrieveUpdateDestroyAPIView):
+    """Ручка для отображения, редактирования и удаления комментария"""
     model = GoalComment
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [CommentsPermissions, IsOwnerOrReadOnly]
     serializer_class = GoalCommentSerializer
 
     def get_queryset(self):
