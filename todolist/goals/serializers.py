@@ -2,8 +2,9 @@ from typing import Type
 
 from django.db import transaction
 from rest_framework import exceptions, serializers
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, PermissionDenied
 
+from todolist.core.models import User
 from todolist.core.serializers import ProfileSerializer
 from todolist.goals.models import Goal, GoalCategory, GoalComment, Board, BoardParticipant
 

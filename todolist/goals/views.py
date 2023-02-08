@@ -1,12 +1,14 @@
 from django.db import transaction
 from django.db.models import Q
+from django_filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, permissions
+from rest_framework.filters import SearchFilter
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
 
 from todolist.goals.filters import GoalDateFilter
-from todolist.goals.models import Goal, GoalCategory, GoalComment, BoardParticipant, Board
-from todolist.goals.permissions import IsOwnerOrReadOnly, BoardPermissions, GoalCategoryPermissions, GoalPermissions, \
-    CommentsPermissions
+from todolist.goals.models import Goal, GoalCategory, GoalComment, Board
+from todolist.goals.permissions import IsOwnerOrReadOnly, BoardPermission, GoalCategoryPermission, GoalPermission, CommentPermission
 from todolist.goals.serializers import (
     GoalCategoryCreateSerializer, GoalCategorySerializer, GoalCommentCreateSerializer, GoalCommentSerializer,
     GoalCreateSerializer, GoalSerializer, BoardCreateSerializer, BoardListSerializer, BoardSerializer,
