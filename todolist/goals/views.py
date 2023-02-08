@@ -141,7 +141,6 @@ class GoalView(generics.RetrieveUpdateAPIView):
         instance.save(update_fields=('status',))
         return
 
-
 class GoalCommentCreateView(generics.CreateAPIView):
     """Ручка для создания комментария"""
     serializer_class = GoalCommentCreateSerializer
