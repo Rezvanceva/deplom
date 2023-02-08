@@ -109,6 +109,45 @@ STATIC_ROOT = BASE_DIR.joinpath('static')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'core.User'
+
+LOGGING: dict[str, Any] = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'health-check': {
+            '()': 'todolist.filters.HealthCheckFilter',
+        },
+    },
+    'formatters': {
+        'console': {
+            'format': '%(asctime)s %(levelname)s [%(name)s:%(lineno)s] %(message)s',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'console',
+            'filters': ['health-check'],
+        },
+        'null': {'class': 'logging.NullHandler'},
+    },
+    'loggers': {
+        '': {
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'handlers': ['console'],
+        },
+        'django.server': {'handlers': ['null']},
+    },
+}
+if env.bool('SQL_ECHO', default=False):
+    LOGGING['loggers'].update({
+        'django.db': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False
+        }
+    })
+
 # Social Oauth
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
 SOCIAL_AUTH_JSONFIELD_CUSTOM = 'django.db.models.JSONField'
@@ -122,9 +161,7 @@ SOCIAL_AUTH_URL_NAMESPACE = 'social'
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 SOCIAL_AUTH_LOGIN_ERROR_URL = '/login-error/'
 SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
-SOCIAL_AUTH_VK_EXTRA_DATA = [
-    ('email', 'email'),
-]
+SOCIAL_AUTH_VK_EXTRA_DATA = [('email', 'email')]
 SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/logged-in/'
 SOCIAL_AUTH_USER_MODEL = 'core.User'
 
