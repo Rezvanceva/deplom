@@ -53,14 +53,17 @@ services:
   bot:
     build:
       context: .
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
     depends_on:
       db:
         condition: service_healthy
       api:
         condition: service_healthy
     volumes:
-      - ./bot:/project/bot
-
+      - ./todolist/bot/:/opt/todolist/bot/
     command: python manage.py runbot
 
 volumes:
