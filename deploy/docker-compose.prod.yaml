@@ -39,7 +39,7 @@ services:
       - django_static:/opt/static
 
   frontend:
-    image: sermalenk/skypro-front:lesson-38
+    image: sermalenk/skypro-front:lesson-37
     restart: always
     ports:
       - "80:80"
@@ -52,4 +52,6 @@ services:
 
 volumes:
   todolist_pg_data:
+    driver: local
   django_static:
+    driver: local
