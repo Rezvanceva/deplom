@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     # project apps
     'todolist.core',
     'todolist.goals',
+    'todolist.bot',
 ]
 
 if DEBUG:
@@ -134,3 +135,4 @@ REST_FRAMEWORK = {
     'DATETIME_FORMAT': '%Y-%m-%d %H:%M:%S',
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
+BOT_TOKEN = env.str('BOT_TOKEN')

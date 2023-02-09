@@ -9,10 +9,13 @@ from rest_framework.response import Response
 def health_check(request):
     return Response({'status': 'OK'})
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('ping/', health_check, name='health-check'),
     path('core/', include('todolist.core.urls')),
     path('goals/', include('todolist.goals.urls')),
+    path('bot/', include('todolist.bot.urls')),
     path('oauth/', include('social_django.urls', namespace='social')),
 ]
 
