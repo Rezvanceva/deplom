@@ -24,4 +24,3 @@ class TgClient:
         url = self.get_url('sendMessage')
         response = requests.post(url, json={'chat_id': chat_id, 'text': text})
         return SendMessagesResponse(**response.json())
-0?
