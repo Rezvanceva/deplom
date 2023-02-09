@@ -39,7 +39,7 @@ services:
       - django_static:/opt/static
 
   frontend:
-    image: sermalenk/skypro-front:lesson-37
+    image: sermalenk/skypro-front:lesson-38
     restart: always
     ports:
       - "80:80"
