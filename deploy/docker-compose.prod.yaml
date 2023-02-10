@@ -19,7 +19,6 @@ services:
 
   api:
     image: ${DOCKERHUB_USERNAME}/deplom:${TAG_NAME}
-    build: .
     restart: always
     env_file:
       - .env
