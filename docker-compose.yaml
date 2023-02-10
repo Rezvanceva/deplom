@@ -24,7 +24,6 @@ services:
   api:
     build:
       context: .
-      target: api-image
     restart: always
     env_file:
       - .env
@@ -65,7 +64,6 @@ services:
   bot:
     build:
       context: .
-      target: bot-image
     env_file:
       - .env
     environment:

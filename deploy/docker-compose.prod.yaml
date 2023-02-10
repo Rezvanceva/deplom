@@ -19,9 +19,6 @@ services:
 
   api:
     image: ${DOCKERHUB_USERNAME}/deplom:${TAG_NAME}
-    build:
-      context: .
-      target: api-image
     restart: always
     env_file:
       - .env
@@ -54,9 +51,6 @@ services:
 
   bot:
     image: ${DOCKERHUB_USERNAME}/deplom:${TAG_NAME}
-    build:
-      context: .
-      target: bot-image
     env_file:
       - ./.env
     depends_on:
