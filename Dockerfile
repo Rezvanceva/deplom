@@ -15,4 +15,3 @@ COPY . .
 ENTRYPOINT ["bash", "entrypoint.sh"]
 
 CMD ["gunicorn", "todolist.wsgi", "-w", "4", "-b", "0.0.0.0:8000"]
-CMD ["python", "manage.py", "runbot"]

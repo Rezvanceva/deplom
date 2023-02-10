@@ -56,9 +56,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: python manage.py runbot
     volumes:
       - ./todolist/bot/:/opt/todolist/bot/
+    command: python manage.py runbot
 
 volumes:
   todolist_pg_data:
