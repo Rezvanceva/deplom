@@ -14,10 +14,10 @@ COPY . .
 
 ENTRYPOINT ["bash", "entrypoint.sh"]
 
-FROM base-image as api-image
+FROM base-image as api
 
 CMD ["gunicorn", "todolist.wsgi", "-w", "4", "-b", "0.0.0.0:8000"]
 
-FROM base-image as bot-image
+FROM base-image as bot
 
 CMD ["python", "manage.py", "runbot"]
