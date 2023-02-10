@@ -19,6 +19,7 @@ services:
 
   api:
     image: ${DOCKERHUB_USERNAME}/deplom:${TAG_NAME}
+    build: .
     restart: always
     env_file:
       - .env
@@ -62,4 +63,6 @@ services:
 
 volumes:
   todolist_pg_data:
+    driver: local
   django_static:
+    driver: local
