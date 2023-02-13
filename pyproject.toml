@@ -25,6 +25,10 @@ django-filter = "^22.1"
 django-extensions = "^3.2.1"
 pydantic = "^1.10.4"
 basemodel = "^20190604.1625"
+register = "^0.1"
+pytest = "^7.2.1"
+freezegun = "^1.2.2"
+pytest-factoryboy = "^2.5.1"
 
 
 [tool.poetry.group.dev.dependencies]
