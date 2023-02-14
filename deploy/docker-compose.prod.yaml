@@ -52,7 +52,7 @@ services:
   bot:
     image: ${DOCKERHUB_USERNAME}/deplom:${TAG_NAME}
     env_file:
-      - ./.env
+      - .env
     depends_on:
       db:
         condition: service_healthy

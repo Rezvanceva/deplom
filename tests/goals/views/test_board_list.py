@@ -1,19 +1,25 @@
+from typing import Any
+
 import pytest
+from apiclient import APIClient
 from django.urls import reverse
+from faker import factory
 from rest_framework import status
 
 from tests.utils import BaseTestCase
+from todolist.goals.serializers import BoardSerializer
 
 
 @pytest.mark.django_db()
 class TestBoardListView(BaseTestCase):
     url = reverse('goals:board-list')
 
-    def test_auth_required(self, client):
+    def test_auth_required(self, client: APIClient) -> None:
         response = client.get(self.url)
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    def test_user_not_board_participant(self, auth_client, board, user, board_factory):
+    def test_user_not_board_participant(self, auth_client: APIClient, board: BoardSerializer, user: Any,
+                                        board_factory: factory) -> None:
         assert not board.participants.count()
         another_board = board_factory.create(with_owner=user)
         assert another_board.participants.count() == 1
@@ -30,7 +36,7 @@ class TestBoardListView(BaseTestCase):
             }
         ]
 
-    def test_sort_boards_by_title(self, auth_client, board_factory, user):
+    def test_sort_boards_by_title(self, auth_client: APIClient, board_factory: factory, user: Any) -> None:
         for title in ['t2', 't1', 't4', 't3']:
             board_factory.create(title=title, with_owner=user)
 
@@ -38,7 +44,7 @@ class TestBoardListView(BaseTestCase):
         assert response.status_code == status.HTTP_200_OK
         assert [board['title'] for board in response.json()] == ['t1', 't2', 't3', 't4']
 
-    def test_board_pagination(self, auth_client, board_factory, user):
+    def test_board_pagination(self, auth_client: APIClient, board_factory: factory, user: Any) -> None:
         board_factory.create_batch(size=10, with_owner=user)
 
         limit_response = auth_client.get(self.url, {'limit': 3})

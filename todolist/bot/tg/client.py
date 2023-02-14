@@ -6,7 +6,7 @@ from todolist.bot.tg.dc import GetUpdatesResponse, SendMessagesResponse
 class TgClient:
     """Класс для подключения и взаимодействия с ботом"""
 
-    def __init__(self, token: str):
+    def __init__(self, token: str) -> None:
         self.token = token
 
     def get_url(self, method: str) -> str:

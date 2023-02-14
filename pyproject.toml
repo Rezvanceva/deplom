@@ -29,6 +29,10 @@ register = "^0.1"
 pytest = "^7.2.1"
 freezegun = "^1.2.2"
 pytest-factoryboy = "^2.5.1"
+mypy = "^1.0.0"
+apiclient = "^1.0.4"
+objects = "^0.3.1"
+serializer = "^0.2.1"
 
 
 [tool.poetry.group.dev.dependencies]

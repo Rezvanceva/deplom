@@ -1,3 +1,5 @@
+from typing import Any
+
 import factory
 from django.utils import timezone
 from pytest_factoryboy import register
@@ -15,7 +17,7 @@ class UserFactory(factory.django.DjangoModelFactory):
         model = 'core.User'
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):
+    def _create(cls, model_class: type, *args: tuple, **kwargs: dict) -> Any:
         return cls._get_manager(model_class).create_user(*args, **kwargs)
 
 
@@ -35,7 +37,7 @@ class BoardFactory(DatesFactoryMixin):
         model = 'goals.Board'
 
     @factory.post_generation
-    def with_owner(self, create, owner, **kwargs):
+    def with_owner(self, create: Any, owner: Any, **kwargs: Any) -> Any:
         if owner:
             BoardParticipant.objects.create(board=self, user=owner, role=BoardParticipant.Role.owner)
 

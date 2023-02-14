@@ -1,5 +1,7 @@
 import pytest
+from apiclient import APIClient
 from django.urls import reverse
+from faker import Faker, factory
 from rest_framework import status
 
 from tests.utils import BaseTestCase
@@ -9,11 +11,11 @@ from tests.utils import BaseTestCase
 class TestUpdatePasswordView(BaseTestCase):
     url = reverse('core:update-password')
 
-    def test_auth_required(self, client):
+    def test_auth_required(self, client: APIClient) -> None:
         response = client.patch(self.url)
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    def test_invalid_old_password(self, auth_client, faker):
+    def test_invalid_old_password(self, auth_client: APIClient, faker: Faker) -> APIClient:
         response = auth_client.patch(self.url, data={
             'old_password': faker.password(),
             'new_password': faker.password(),
@@ -21,7 +23,8 @@ class TestUpdatePasswordView(BaseTestCase):
         assert response.status_code == status.HTTP_400_BAD_REQUEST, response.json()
         assert response.json() == {'old_password': ['Password is incorrect']}
 
-    def test_weak_new_password(self, client, user_factory, faker, invalid_password):
+    def test_weak_new_password(self, client: APIClient, user_factory: factory, faker: Faker,
+                               invalid_password: str) -> None:
         password = faker.password()
         user = user_factory.create(password=password)
 
@@ -32,7 +35,7 @@ class TestUpdatePasswordView(BaseTestCase):
         })
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    def test_success(self, client, faker, user_factory):
+    def test_success(self, client: APIClient, faker: Faker, user_factory: factory) -> None:
         old_password = faker.password()
         user = user_factory.create(password=old_password)
 

@@ -51,7 +51,7 @@ class GoalCreateSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('id', 'created', 'updated', 'user')
 
-    def validate_category(self, value: GoalCategory):
+    def validate_category(self, value: GoalCategory) -> GoalCategory:
         if not BoardParticipant.objects.filter(
                 board_id=value.board_id,
                 role__in=[BoardParticipant.Role.owner, BoardParticipant.Role.writer],
@@ -67,7 +67,7 @@ class GoalSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('id', 'created', 'updated', 'user')
 
-    def validate_category(self, value: GoalCategory):
+    def validate_category(self, value: GoalCategory) -> GoalCategory:
         if self.context['request'].user.id != value.user_id:
             raise exceptions.PermissionDenied
         return value
@@ -81,7 +81,7 @@ class GoalCommentCreateSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('id', 'created', 'updated', 'user')
 
-    def validate_goal(self, value: Goal):
+    def validate_goal(self, value: Goal)  -> Goal:
         if not BoardParticipant.objects.filter(
                 board=value.category.board_id,
                 role__in=[BoardParticipant.Role.owner, BoardParticipant.Role.writer],
@@ -130,7 +130,7 @@ class BoardSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('id', 'created', 'updated', 'is_deleted')
 
-    def update(self, instance: Board, validated_data: dict):
+    def update(self, instance: Board, validated_data: dict) -> Board:
         with transaction.atomic():
             BoardParticipant.objects.filter(board=instance).exclude(user=self.context['request'].user).delete()
             BoardParticipant.objects.bulk_create([

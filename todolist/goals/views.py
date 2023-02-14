@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.db import transaction
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
@@ -13,7 +15,7 @@ class BoardCreateView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = BoardCreateSerializer
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer) -> None:
         """ Делаем текущего пользователя владельцем доски. """
         BoardParticipant.objects.create(user=self.request.user, board=serializer.save())
 
@@ -26,7 +28,7 @@ class BoardListView(generics.ListAPIView):
     ordering_fields = ['title', 'created']
     ordering = ['title']
 
-    def get_queryset(self):
+    def get_queryset(self) -> Any:
         return Board.objects.prefetch_related('participants').filter(
             participants__user_id=self.request.user.id,
             is_deleted=False
@@ -38,10 +40,10 @@ class BoardView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [BoardPermissions]
     serializer_class = BoardSerializer
 
-    def get_queryset(self):
+    def get_queryset(self) -> Any:
         return Board.objects.filter(is_deleted=False)
 
-    def perform_destroy(self, instance: Board):
+    def perform_destroy(self, instance: Board) -> Board:
         with transaction.atomic():
             instance.is_deleted = True
             instance.save(update_fields=('is_deleted',))
@@ -76,13 +78,13 @@ class GoalCategoryView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = GoalCategorySerializer
     permission_classes = [GoalCategoryPermissions, IsOwnerOrReadOnly]
 
-    def get_queryset(self):
+    def get_queryset(self) -> Any:
         return GoalCategory.objects.prefetch_related('board__participants').filter(
             board__participants__user_id=self.request.user.id,
             is_deleted=False
         )
 
-    def perform_destroy(self, instance: GoalCategory):
+    def perform_destroy(self, instance: GoalCategory) -> GoalCategory:
         with transaction.atomic():
             instance.is_deleted = True
             instance.save(update_fields=('is_deleted',))
@@ -105,7 +107,7 @@ class GoalListView(generics.ListAPIView):
     ordering = ['title']
     search_fields = ['title', 'description']
 
-    def get_queryset(self):
+    def get_queryset(self) -> Any:
         return Goal.objects.filter(
             Q(category__board__participants__user_id=self.request.user.id) & ~Q(status=Goal.Status.archived) & Q(
                 category__is_deleted=False)
@@ -117,7 +119,7 @@ class GoalView(generics.RetrieveUpdateAPIView):
     permission_classes = [GoalPermissions, IsOwnerOrReadOnly]
     serializer_class = GoalSerializer
 
-    def get_queryset(self):
+    def get_queryset(self) -> Any:
         return Goal.objects.filter(~Q(status=Goal.Status.archived) & Q(category__is_deleted=False))
 
 
@@ -134,7 +136,7 @@ class GoalCommentListView(generics.ListAPIView):
     filterset_fields = ['goal']
     ordering = ['-created']
 
-    def get_queryset(self):
+    def get_queryset(self) -> Any:
         return GoalComment.objects.filter(
             goal__category__board__participants__user_id=self.request.user.id,
         )
@@ -145,5 +147,5 @@ class GoalCommentView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [CommentsPermissions, IsOwnerOrReadOnly]
     serializer_class = GoalCommentSerializer
 
-    def get_queryset(self):
+    def get_queryset(self) -> Any:
         return GoalComment.objects.filter(user_id=self.request.user.id)

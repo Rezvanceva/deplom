@@ -18,7 +18,7 @@ class TgUserSerializer(serializers.ModelSerializer):
         fields = ('tg_id', 'verification_code', 'username', 'user_id')
         read_only_fields = ('tg_id', 'user_id', 'username')
 
-    def validate(self, attrs: dict[str, Any]):
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         """Метод для валидации кода верификации"""
         verification_code = attrs.get('verification_code')
         tg_user = TgUser.objects.filter(verification_code=verification_code).first()

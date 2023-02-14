@@ -2,6 +2,7 @@ import logging
 import os
 from datetime import datetime
 from enum import Enum, auto
+from typing import Any
 
 from django.conf import settings
 from django.core.management import BaseCommand
@@ -40,7 +41,7 @@ class NewGoal(BaseModel):
 class Command(BaseCommand):
     """Базовый класс для запуска и управления ботом"""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.tg_client = TgClient(settings.BOT_TOKEN)
         self.storage = MemoryStorage()
@@ -50,7 +51,7 @@ class Command(BaseCommand):
         """Защищенный метод для генерации кода верификации"""
         return os.urandom(12).hex()
 
-    def handle_unverified_user(self, msg: Message, tg_user: TgUser):
+    def handle_unverified_user(self, msg: Message, tg_user: TgUser) -> None:
         """Ручка для работы с не идентифицированными пользователями: генерация кода верификации
         и отправка его пользователю"""
         code: str = self._generate_verification_code()
@@ -59,7 +60,7 @@ class Command(BaseCommand):
         self.tg_client.send_message(
             chat_id=msg.chat.id, text=f'[verification code] {tg_user.verification_code}')
 
-    def handle_goals_list(self, msg: Message, tg_user: TgUser):
+    def handle_goals_list(self, msg: Message, tg_user: TgUser) -> None:
         """Ручка для получения и вывода списка целей"""
         resp_goals: list[str] = [
             f'№{goal.id} {goal.title}'
@@ -72,7 +73,7 @@ class Command(BaseCommand):
         else:
             self.tg_client.send_message(msg.chat.id, '[You have no goals]')
 
-    def handle_goal_categories_list(self, msg: Message, tg_user: TgUser):
+    def handle_goal_categories_list(self, msg: Message, tg_user: TgUser) -> None:
         """Ручка для получения и вывода списка категорий целей"""
         resp_categories: list[str] = [
             f'#{category.id} {category.title}'
@@ -84,7 +85,7 @@ class Command(BaseCommand):
         else:
             self.tg_client.send_message(msg.chat.id, '[You have no categories]')
 
-    def handle_save_selected_category(self, msg: Message, tg_user: TgUser):
+    def handle_save_selected_category(self, msg: Message, tg_user: TgUser)  -> None:
         """Ручка для выбора и валидации выбранной категорий для создания новой цели"""
         if msg.text.isdigit():
             category_id = int(msg.text)
@@ -102,7 +103,7 @@ class Command(BaseCommand):
         else:
             self.tg_client.send_message(msg.chat.id, '[Invalid category id]')
 
-    def handle_save_new_category(self, msg: Message, tg_user: TgUser):
+    def handle_save_new_category(self, msg: Message, tg_user: TgUser) -> None:
         """Ручка для создания новой цели"""
         goal = NewGoal(**self.storage.get_data(tg_user.chat_id))
         goal.goal_title = msg.text
@@ -118,7 +119,7 @@ class Command(BaseCommand):
             self.tg_client.send_message(msg.chat.id, '[something went wrong]')
         self.storage.reset(tg_user.chat_id)
 
-    def handle_verified_user(self, msg: Message, tg_user: TgUser):
+    def handle_verified_user(self, msg: Message, tg_user: TgUser)  -> None:
         """Ручка для работы с верифицированным пользователем.
         Принимает и обрабатывает следующие командыЖ
         - /goals -> выводит список целей
@@ -146,7 +147,7 @@ class Command(BaseCommand):
                 case _:
                     logger.warning('invalid state: %s', state)
 
-    def handle_message(self, msg: Message):
+    def handle_message(self, msg: Message) -> None:
         """Ручка определяющая верифицирован пользователь или нет
         верифицированных пользователей отправляет на ручку -> handle_verified_user
         не верифицированных -> handle_unverified_user, для получения кода верификации"""
@@ -161,7 +162,7 @@ class Command(BaseCommand):
         else:
             self.handle_unverified_user(msg=msg, tg_user=tg_user)
 
-    def handle(self, *args, **options):
+    def handle(self, *args: Any, **options: Any) -> None:
         """Ручка проверяет обновления чата. При получении новых сообщений от пользователей
         отправляет их на ручку -> handle_message"""
         offset = 0
